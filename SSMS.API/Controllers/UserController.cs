@@ -6,8 +6,7 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    //[Route("api/[controller]")]
-    [Route("api/user")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController(ISender sender) : ControllerBase
     {

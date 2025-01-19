@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using SSMS.API;
+using SSMS.Core.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSSMSDI();
+//builder.Services.Configure<ConnectionStringOptions>(builder.Configuration.GetSection(ConnectionStringOptions.SectionName));
+
+builder.Services.AddSSMSDI(builder.Configuration);
 
 var app = builder.Build();
 
