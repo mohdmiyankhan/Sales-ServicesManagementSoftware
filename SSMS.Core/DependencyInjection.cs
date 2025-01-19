@@ -9,9 +9,9 @@ namespace SSMS.Core
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddCoreDI(this IServiceCollection service)
+        public static IServiceCollection AddCoreDI(this IServiceCollection services)
         {
-            return service;
+            return services;
         }
     }
 }

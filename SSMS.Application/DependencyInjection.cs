@@ -9,9 +9,11 @@ namespace SSMS.Application
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddApplicationDI(this IServiceCollection service)
+        public static IServiceCollection AddApplicationDI(this IServiceCollection services)
         {
-            return service;
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+            
+            return services;
         }
     }
 }

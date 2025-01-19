@@ -1,6 +1,3 @@
 @SSMS.API_HostAddress = http://localhost:5159
 
-GET {{SSMS.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###

@@ -5,11 +5,12 @@ namespace SSMS.API
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddSSMSDI(this IServiceCollection service)
+        public static IServiceCollection AddSSMSDI(this IServiceCollection services)
         {
-            service.AddApplicationDI()
+            services.AddApplicationDI()
                 .AddInfrastructureDI();
-            return service;
+
+            return services;
         }
     }
 }
