@@ -3,30 +3,29 @@ using SSMS.Core.Entities;
 using SSMS.Core.Interfaces;
 using SSMS.Core.Models;
 using SSMS.Infrastructure.Data;
-using System.Data;
 
 namespace SSMS.Infrastructure.Repositories
 {
-    public class UserRepository(SSMSDbContext dbContext) : IUserRepository
+    public class CustomerRepository(SSMSDbContext dbContext) : ICustomerRepository
     {
-        public async Task<ApiResponseModel<IEnumerable<UserEntity>>> GetAllUsersAsync()
+        public async Task<ApiResponseModel<IEnumerable<CustomerEntity>>> GetAllCustomersAsync()
         {
-            var users = await dbContext.UserMaster.ToListAsync();
-            if (users.Count == 0)
+            var customers = await dbContext.CustomerMaster.ToListAsync();
+            if (customers.Count > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<CustomerEntity>>
                 {
-                    Message = "User list fetched successfully.",
+                    Message = "Customer list fetched successfully.",
                     Status = 200,
-                    Data = users
+                    Data = customers
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<CustomerEntity>>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -35,24 +34,24 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> GetUserByIdAsync(int userId)
+        public async Task<ApiResponseModel<CustomerEntity>> GetCustomerByIdAsync(int customerId)
         {
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var customer = await dbContext.CustomerMaster.FirstOrDefaultAsync(x => x.Id == customerId);
+            if (customer is not null)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
-                    Message = "User fetched successfully.",
+                    Message = "Customer fetched successfully.",
                     Status = 200,
-                    Data = user
+                    Data = customer
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -61,7 +60,7 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> AddUserAsync(UserEntity entity)
+        public async Task<ApiResponseModel<CustomerEntity>> AddCustomerAsync(CustomerEntity entity)
         {
             //entity.Id = Guid.NewGuid();
             entity.CreatedBy = null;
@@ -72,14 +71,14 @@ namespace SSMS.Infrastructure.Repositories
             entity.DeletedDate = null;
             entity.IsActive = 1;
 
-            dbContext.UserMaster.Add(entity);
+            dbContext.CustomerMaster.Add(entity);
             int res = await dbContext.SaveChangesAsync();
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
-                    Message = "User added successfully.",
+                    Message = "Customer added successfully.",
                     Status = 200
                 };
                 return response;
@@ -87,7 +86,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -96,16 +95,20 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> UpdateUserAsync(int userId, UserEntity entity)
+        public async Task<ApiResponseModel<CustomerEntity>> UpdateCustomerAsync(int customerId, CustomerEntity entity)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var customer = await dbContext.CustomerMaster.FirstOrDefaultAsync(x => x.Id == customerId);
+
+            if (customer is not null)
             {
-                user.Name = entity.Name;
-                user.MobileNo = entity.MobileNo;
-                user.EmailId = entity.EmailId;
-                user.RoleId = entity.RoleId;
+                customer.CustomerName = entity.CustomerName;
+                customer.MobileNo = entity.MobileNo;
+                customer.AltMobileNo = entity.AltMobileNo;
+                customer.EmailId = entity.EmailId;
+                customer.Address = entity.Address;
+                customer.ModifiedBy = null;
+                customer.ModifiedDate = DateTime.UtcNow;
 
                 res = await dbContext.SaveChangesAsync();
             }
@@ -113,9 +116,9 @@ namespace SSMS.Infrastructure.Repositories
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
-                    Message = "User updated successfully.",
+                    Message = "Customer updated successfully.",
                     Status = 200
                 };
                 return response;
@@ -123,7 +126,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -132,26 +135,27 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> DeleteUserAsync(int userId)
+        public async Task<ApiResponseModel<CustomerEntity>> DeleteCustomerAsync(int customerId)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
-            {
-                user.DeletedBy = null;
-                user.DeletedDate = DateTime.UtcNow;
-                user.IsActive = 0;
+            var customer = await dbContext.CustomerMaster.FirstOrDefaultAsync(x => x.Id == customerId);
 
-                //dbContext.UserMaster.Remove(user);
+            if (customer is not null)
+            {
+                customer.DeletedBy = null;
+                customer.DeletedDate = DateTime.UtcNow;
+                customer.IsActive = 0;
+
+                //dbContext.CustomerMaster.Remove(customer);
                 res = await dbContext.SaveChangesAsync();
             }
 
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
-                    Message = "User deleted successfully.",
+                    Message = "Customer deleted successfully.",
                     Status = 200
                 };
                 return response;
@@ -159,7 +163,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CustomerEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400

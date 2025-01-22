@@ -1,18 +1,14 @@
 ﻿using SSMS.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SSMS.Core.Models;
 
 namespace SSMS.Core.Interfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserEntity>> GetUsersAsync();
-        Task<UserEntity> GetUserByIdAsync(Guid id);
-        Task<UserEntity> AddUserAsync(UserEntity entity);
-        Task<UserEntity> UpdateUserAsync(Guid userId, UserEntity entity);
-        Task<bool> DeleteUserAsync(Guid userId);
+        Task<ApiResponseModel<IEnumerable<UserEntity>>> GetAllUsersAsync();
+        Task<ApiResponseModel<UserEntity>> GetUserByIdAsync(int userId);
+        Task<ApiResponseModel<UserEntity>> AddUserAsync(UserEntity entity);
+        Task<ApiResponseModel<UserEntity>> UpdateUserAsync(int userId, UserEntity entity);
+        Task<ApiResponseModel<UserEntity>> DeleteUserAsync(int userId);
     }
 }

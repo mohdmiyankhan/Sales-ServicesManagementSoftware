@@ -9,8 +9,8 @@ namespace SSMS.API
         public static IServiceCollection AddSSMSDI(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddApplicationDI()
-                .AddInfrastructureDI()
-                .AddCoreDI(configuration);
+                    .AddCoreDI(configuration)
+                    .AddInfrastructureDI();
 
             return services;
         }

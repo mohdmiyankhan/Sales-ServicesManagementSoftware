@@ -18,7 +18,13 @@ namespace SSMS.Infrastructure
                 options.UseSqlServer(provider.GetRequiredService<IOptionsSnapshot<ConnectionStringOptions>>().Value.SSMS_ConnectionString);
             });
 
+            services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+
             services.AddScoped<IExternalVendorRepository, ExternalVendorRepository>();
 
             services.AddHttpClient<ICoindeskHttpClientService, CoindeskHttpClientService>(options =>

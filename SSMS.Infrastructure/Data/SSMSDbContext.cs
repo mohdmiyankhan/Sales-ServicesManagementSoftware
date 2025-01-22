@@ -5,6 +5,10 @@ namespace SSMS.Infrastructure.Data
 {
     public class SSMSDbContext(DbContextOptions<SSMSDbContext> options) : DbContext(options)
     {
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<CustomerEntity> CustomerMaster { get; set; }
+        public DbSet<CategoryEntity> CategoryMaster { get; set; }
+        public DbSet<SubCategoryEntity> SubCategoryMaster { get; set; }
+        public DbSet<RoleEntity> RoleMaster { get; set; }
+        public DbSet<UserEntity> UserMaster { get; set; }
     }
 }

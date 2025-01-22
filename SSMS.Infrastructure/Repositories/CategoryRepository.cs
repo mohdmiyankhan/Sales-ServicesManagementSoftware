@@ -3,30 +3,29 @@ using SSMS.Core.Entities;
 using SSMS.Core.Interfaces;
 using SSMS.Core.Models;
 using SSMS.Infrastructure.Data;
-using System.Data;
 
 namespace SSMS.Infrastructure.Repositories
 {
-    public class UserRepository(SSMSDbContext dbContext) : IUserRepository
+    public class CategoryRepository(SSMSDbContext dbContext) : ICategoryRepository
     {
-        public async Task<ApiResponseModel<IEnumerable<UserEntity>>> GetAllUsersAsync()
+        public async Task<ApiResponseModel<IEnumerable<CategoryEntity>>> GetAllCategoriesAsync()
         {
-            var users = await dbContext.UserMaster.ToListAsync();
-            if (users.Count == 0)
+            var categories = await dbContext.CategoryMaster.Where(x => x.IsActive == 1).ToListAsync();
+            if (categories.Count > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<CategoryEntity>>
                 {
-                    Message = "User list fetched successfully.",
+                    Message = "Category list fetched successfully.",
                     Status = 200,
-                    Data = users
+                    Data = categories
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<CategoryEntity>>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -35,24 +34,24 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> GetUserByIdAsync(int userId)
+        public async Task<ApiResponseModel<CategoryEntity>> GetCategoryByIdAsync(int categoryId)
         {
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var category = await dbContext.CategoryMaster.FirstOrDefaultAsync(x => x.Id == categoryId);
+            if (category is not null)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
-                    Message = "User fetched successfully.",
+                    Message = "Category fetched successfully.",
                     Status = 200,
-                    Data = user
+                    Data = category
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -61,7 +60,7 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> AddUserAsync(UserEntity entity)
+        public async Task<ApiResponseModel<CategoryEntity>> AddCategoryAsync(CategoryEntity entity)
         {
             //entity.Id = Guid.NewGuid();
             entity.CreatedBy = null;
@@ -72,14 +71,14 @@ namespace SSMS.Infrastructure.Repositories
             entity.DeletedDate = null;
             entity.IsActive = 1;
 
-            dbContext.UserMaster.Add(entity);
+            dbContext.CategoryMaster.Add(entity);
             int res = await dbContext.SaveChangesAsync();
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
-                    Message = "User added successfully.",
+                    Message = "Category added successfully.",
                     Status = 200
                 };
                 return response;
@@ -87,7 +86,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -96,16 +95,16 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> UpdateUserAsync(int userId, UserEntity entity)
+        public async Task<ApiResponseModel<CategoryEntity>> UpdateCategoryAsync(int categoryId, CategoryEntity entity)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var category = await dbContext.CategoryMaster.FirstOrDefaultAsync(x => x.Id == categoryId);
+            if (category is not null)
             {
-                user.Name = entity.Name;
-                user.MobileNo = entity.MobileNo;
-                user.EmailId = entity.EmailId;
-                user.RoleId = entity.RoleId;
+                category.Category = entity.Category;
+                category.Description = entity.Description;
+                category.ModifiedBy = null;
+                category.ModifiedDate = DateTime.UtcNow;
 
                 res = await dbContext.SaveChangesAsync();
             }
@@ -113,9 +112,9 @@ namespace SSMS.Infrastructure.Repositories
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
-                    Message = "User updated successfully.",
+                    Message = "Category updated successfully.",
                     Status = 200
                 };
                 return response;
@@ -123,7 +122,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -132,26 +131,26 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> DeleteUserAsync(int userId)
+        public async Task<ApiResponseModel<CategoryEntity>> DeleteCategoryAsync(int categoryId)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var category = await dbContext.CategoryMaster.FirstOrDefaultAsync(x => x.Id == categoryId);
+            if (category is not null)
             {
-                user.DeletedBy = null;
-                user.DeletedDate = DateTime.UtcNow;
-                user.IsActive = 0;
+                category.DeletedBy = null;
+                category.DeletedDate = DateTime.UtcNow;
+                category.IsActive = 0;
 
-                //dbContext.UserMaster.Remove(user);
+                //dbContext.CategoryMaster.Remove(category);
                 res = await dbContext.SaveChangesAsync();
             }
 
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
-                    Message = "User deleted successfully.",
+                    Message = "Category deleted successfully.",
                     Status = 200
                 };
                 return response;
@@ -159,7 +158,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<CategoryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400

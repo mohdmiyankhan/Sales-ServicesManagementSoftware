@@ -3,30 +3,29 @@ using SSMS.Core.Entities;
 using SSMS.Core.Interfaces;
 using SSMS.Core.Models;
 using SSMS.Infrastructure.Data;
-using System.Data;
 
 namespace SSMS.Infrastructure.Repositories
 {
-    public class UserRepository(SSMSDbContext dbContext) : IUserRepository
+    public class RoleRepository(SSMSDbContext dbContext) : IRoleRepository
     {
-        public async Task<ApiResponseModel<IEnumerable<UserEntity>>> GetAllUsersAsync()
+        public async Task<ApiResponseModel<IEnumerable<RoleEntity>>> GetAllRolesAsync()
         {
-            var users = await dbContext.UserMaster.ToListAsync();
-            if (users.Count == 0)
+            var roles = await dbContext.RoleMaster.ToListAsync();
+            if (roles.Count > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
                 {
-                    Message = "User list fetched successfully.",
+                    Message = "Role list fetched successfully.",
                     Status = 200,
-                    Data = users
+                    Data = roles
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<UserEntity>>
+                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -35,24 +34,24 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> GetUserByIdAsync(int userId)
+        public async Task<ApiResponseModel<RoleEntity>> GetRoleByIdAsync(int roleId)
         {
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
+            if (role is not null)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
-                    Message = "User fetched successfully.",
+                    Message = "Role fetched successfully.",
                     Status = 200,
-                    Data = user
+                    Data = role
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -61,7 +60,7 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> AddUserAsync(UserEntity entity)
+        public async Task<ApiResponseModel<RoleEntity>> AddRoleAsync(RoleEntity entity)
         {
             //entity.Id = Guid.NewGuid();
             entity.CreatedBy = null;
@@ -72,14 +71,14 @@ namespace SSMS.Infrastructure.Repositories
             entity.DeletedDate = null;
             entity.IsActive = 1;
 
-            dbContext.UserMaster.Add(entity);
+            dbContext.RoleMaster.Add(entity);
             int res = await dbContext.SaveChangesAsync();
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
-                    Message = "User added successfully.",
+                    Message = "Role added successfully.",
                     Status = 200
                 };
                 return response;
@@ -87,7 +86,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -96,16 +95,15 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> UpdateUserAsync(int userId, UserEntity entity)
+        public async Task<ApiResponseModel<RoleEntity>> UpdateRoleAsync(int roleId, RoleEntity entity)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
+            if (role is not null)
             {
-                user.Name = entity.Name;
-                user.MobileNo = entity.MobileNo;
-                user.EmailId = entity.EmailId;
-                user.RoleId = entity.RoleId;
+                role.Role = entity.Role;
+                role.ModifiedBy = null;
+                role.ModifiedDate = DateTime.UtcNow;
 
                 res = await dbContext.SaveChangesAsync();
             }
@@ -113,9 +111,9 @@ namespace SSMS.Infrastructure.Repositories
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
-                    Message = "User updated successfully.",
+                    Message = "Role updated successfully.",
                     Status = 200
                 };
                 return response;
@@ -123,7 +121,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -132,26 +130,26 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<UserEntity>> DeleteUserAsync(int userId)
+        public async Task<ApiResponseModel<RoleEntity>> DeleteRoleAsync(int roleId)
         {
             int res = 0;
-            var user = await dbContext.UserMaster.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is not null)
+            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
+            if (role is not null)
             {
-                user.DeletedBy = null;
-                user.DeletedDate = DateTime.UtcNow;
-                user.IsActive = 0;
+                role.DeletedBy = null;
+                role.DeletedDate = DateTime.UtcNow;
+                role.IsActive = 0;
 
-                //dbContext.UserMaster.Remove(user);
+                //dbContext.RoleMaster.Remove(role);
                 res = await dbContext.SaveChangesAsync();
             }
 
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
-                    Message = "User deleted successfully.",
+                    Message = "Role deleted successfully.",
                     Status = 200
                 };
                 return response;
@@ -159,7 +157,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<UserEntity>
+                var response = new ApiResponseModel<RoleEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400

@@ -9,7 +9,7 @@ namespace SSMS.Core.Interfaces
 {
     public interface IExternalVendorRepository
     {
-        Task<CoindeskDataModel> GetData();
-        Task<JokeModel> GetJoke();
+        Task<ApiResponseModel<CoindeskDataModel>> GetData();
+        Task<ApiResponseModel<JokeModel>> GetJoke();
     }
 }

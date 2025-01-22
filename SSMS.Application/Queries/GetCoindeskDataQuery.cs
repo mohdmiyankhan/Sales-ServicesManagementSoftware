@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SSMS.Application.Queries
 {
-    public record GetCoindeskDataQuery() : IRequest<CoindeskDataModel>;
+    public record GetCoindeskDataQuery() : IRequest<ApiResponseModel<CoindeskDataModel>>;
 
     public class GetCoindeskDataQueryHandler(IExternalVendorRepository externalVendorRepository)
-        : IRequestHandler<GetCoindeskDataQuery, CoindeskDataModel>
+        : IRequestHandler<GetCoindeskDataQuery, ApiResponseModel<CoindeskDataModel>>
     {
-        public async Task<CoindeskDataModel> Handle(GetCoindeskDataQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponseModel<CoindeskDataModel>> Handle(GetCoindeskDataQuery request, CancellationToken cancellationToken)
         {
             return await externalVendorRepository.GetData();
         }

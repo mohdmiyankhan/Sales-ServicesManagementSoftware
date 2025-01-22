@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace SSMS.Application.Queries
 {
-    public record GetJokeQuery() : IRequest<JokeModel>;
+    public record GetJokeQuery() : IRequest<ApiResponseModel<JokeModel>>;
 
     public class GetJokeQueryHandler(IExternalVendorRepository externalVendorRepository)
-        : IRequestHandler<GetJokeQuery, JokeModel>
+        : IRequestHandler<GetJokeQuery, ApiResponseModel<JokeModel>>
     {
-        public async Task<JokeModel> Handle(GetJokeQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponseModel<JokeModel>> Handle(GetJokeQuery request, CancellationToken cancellationToken)
         {
             return await externalVendorRepository.GetJoke();
         }

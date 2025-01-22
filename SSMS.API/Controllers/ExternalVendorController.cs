@@ -12,14 +12,14 @@ namespace SSMS.API.Controllers
         public async Task<IActionResult> GetCoindeskDataAsync()
         {
             var result = await sender.Send(new GetCoindeskDataQuery());
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
 
         [HttpGet("getJoke")]
         public async Task<IActionResult> GetJokeAsync()
         {
             var result = await sender.Send(new GetJokeQuery());
-            return Ok(result);
+            return StatusCode(result.Status, result);
         }
     }
 }
