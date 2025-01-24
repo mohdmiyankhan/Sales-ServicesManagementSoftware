@@ -7,7 +7,7 @@ using SSMS.Infrastructure.Services;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController(ISender sender, IConfiguration configuration) : ControllerBase
     {

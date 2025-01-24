@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SSMS.Core.Entities
 {
-    public class SubCategoryEntity
+    public class CountryEntity
     {
         public int Id { get; set; }
-        public string SubCategory { get; set; }
-        [NotMapped]
-        public string? Category { get; set; }
-        public int CategoryId { get; set; }
-        public string Description { get; set; }
+        public string Country { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? ModifiedBy { get; set; }

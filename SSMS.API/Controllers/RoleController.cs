@@ -8,9 +8,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/role")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RoleController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllRoles")]
@@ -28,16 +28,16 @@ namespace SSMS.API.Controllers
         }
 
         [HttpPost("addRole")]
-        public async Task<IActionResult> AddRoleAsync([FromBody] RoleEntity role)
+        public async Task<IActionResult> AddRoleAsync([FromBody] RoleEntity entity)
         {
-            var result = await sender.Send(new AddRoleCommand(role));
+            var result = await sender.Send(new AddRoleCommand(entity));
             return StatusCode(result.Status, result);
         }
 
         [HttpPut("updateRole/{roleId}")]
-        public async Task<IActionResult> UpdateRoleAsync([FromRoute] int roleId, [FromBody] RoleEntity role)
+        public async Task<IActionResult> UpdateRoleAsync([FromRoute] int roleId, [FromBody] RoleEntity entity)
         {
-            var result = await sender.Send(new UpdateRoleCommand(roleId, role));
+            var result = await sender.Send(new UpdateRoleCommand(roleId, entity));
             return StatusCode(result.Status, result);
         }
 

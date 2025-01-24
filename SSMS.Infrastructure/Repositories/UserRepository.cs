@@ -11,15 +11,17 @@ namespace SSMS.Infrastructure.Repositories
     {
         public async Task<ApiResponseModel<IEnumerable<UserEntity>>> GetAllUsersAsync()
         {
-            var users = await dbContext.UserMaster.ToListAsync();
-            if (users.Count == 0)
+            IQueryable<UserEntity> usersQ = dbContext.UserMaster;
+            IEnumerable<UserEntity> usersE = await usersQ.Where(x => x.IsActive == 1).ToListAsync();
+
+            if (usersE.Any())
             {
                 // Create Api response
                 var response = new ApiResponseModel<IEnumerable<UserEntity>>
                 {
                     Message = "User list fetched successfully.",
                     Status = 200,
-                    Data = users
+                    Data = usersE
                 };
                 return response;
             }

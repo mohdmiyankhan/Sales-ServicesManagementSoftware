@@ -6,28 +6,28 @@ using SSMS.Infrastructure.Data;
 
 namespace SSMS.Infrastructure.Repositories
 {
-    public class RoleRepository(SSMSDbContext dbContext) : IRoleRepository
+    public class StatusRepository(SSMSDbContext dbContext) : IStatusRepository
     {
-        public async Task<ApiResponseModel<IEnumerable<RoleEntity>>> GetAllRolesAsync()
+        public async Task<ApiResponseModel<IEnumerable<StatusEntity>>> GetAllStatusesAsync()
         {
-            IQueryable<RoleEntity> rolesQ = dbContext.RoleMaster;
-            IEnumerable<RoleEntity> rolesE = await rolesQ.Where(x => x.IsActive == 1).ToListAsync();
+            IQueryable<StatusEntity> statusesQ = dbContext.StatusMaster;
+            IEnumerable<StatusEntity> statusesE = await statusesQ.Where(x => x.IsActive == 1).ToListAsync();
 
-            if (rolesE.Any())
+            if (statusesE.Any())
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
+                var response = new ApiResponseModel<IEnumerable<StatusEntity>>
                 {
-                    Message = "Role list fetched successfully.",
+                    Message = "Status list fetched successfully.",
                     Status = 200,
-                    Data = rolesE
+                    Data = statusesE
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
+                var response = new ApiResponseModel<IEnumerable<StatusEntity>>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -36,24 +36,24 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> GetRoleByIdAsync(int roleId)
+        public async Task<ApiResponseModel<StatusEntity>> GetStatusByIdAsync(int statusId)
         {
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var status = await dbContext.StatusMaster.FirstOrDefaultAsync(x => x.Id == statusId);
+            if (status is not null)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
-                    Message = "Role fetched successfully.",
+                    Message = "Status fetched successfully.",
                     Status = 200,
-                    Data = role
+                    Data = status
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -62,7 +62,7 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> AddRoleAsync(RoleEntity entity)
+        public async Task<ApiResponseModel<StatusEntity>> AddStatusAsync(StatusEntity entity)
         {
             //entity.Id = Guid.NewGuid();
             entity.CreatedBy = null;
@@ -73,14 +73,14 @@ namespace SSMS.Infrastructure.Repositories
             entity.DeletedDate = null;
             entity.IsActive = 1;
 
-            dbContext.RoleMaster.Add(entity);
+            dbContext.StatusMaster.Add(entity);
             int res = await dbContext.SaveChangesAsync();
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
-                    Message = "Role added successfully.",
+                    Message = "Status added successfully.",
                     Status = 200
                 };
                 return response;
@@ -88,7 +88,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -97,15 +97,15 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> UpdateRoleAsync(int roleId, RoleEntity entity)
+        public async Task<ApiResponseModel<StatusEntity>> UpdateStatusAsync(int statusId, StatusEntity entity)
         {
             int res = 0;
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var status = await dbContext.StatusMaster.FirstOrDefaultAsync(x => x.Id == statusId);
+            if (status is not null)
             {
-                role.Role = entity.Role;
-                role.ModifiedBy = null;
-                role.ModifiedDate = DateTime.UtcNow;
+                status.Status = entity.Status;
+                status.ModifiedBy = null;
+                status.ModifiedDate = DateTime.UtcNow;
 
                 res = await dbContext.SaveChangesAsync();
             }
@@ -113,9 +113,9 @@ namespace SSMS.Infrastructure.Repositories
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
-                    Message = "Role updated successfully.",
+                    Message = "Status updated successfully.",
                     Status = 200
                 };
                 return response;
@@ -123,7 +123,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -132,26 +132,26 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> DeleteRoleAsync(int roleId)
+        public async Task<ApiResponseModel<StatusEntity>> DeleteStatusAsync(int statusId)
         {
             int res = 0;
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var status = await dbContext.StatusMaster.FirstOrDefaultAsync(x => x.Id == statusId);
+            if (status is not null)
             {
-                role.DeletedBy = null;
-                role.DeletedDate = DateTime.UtcNow;
-                role.IsActive = 0;
+                status.DeletedBy = null;
+                status.DeletedDate = DateTime.UtcNow;
+                status.IsActive = 0;
 
-                //dbContext.RoleMaster.Remove(role);
+                //dbContext.StatusMaster.Remove(status);
                 res = await dbContext.SaveChangesAsync();
             }
 
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
-                    Message = "Role deleted successfully.",
+                    Message = "Status deleted successfully.",
                     Status = 200
                 };
                 return response;
@@ -159,7 +159,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<StatusEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400

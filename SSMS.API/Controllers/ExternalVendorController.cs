@@ -4,7 +4,7 @@ using SSMS.Application.Queries;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/externalVendor")]
     [ApiController]
     public class ExternalVendorController(ISender sender) : ControllerBase
     {

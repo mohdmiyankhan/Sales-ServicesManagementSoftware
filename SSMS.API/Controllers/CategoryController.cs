@@ -9,7 +9,7 @@ using SSMS.Core.Models;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category")]
     [ApiController]
     //[Authorize]
     public class CategoryController(ISender sender) : ControllerBase

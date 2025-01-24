@@ -22,7 +22,10 @@ namespace SSMS.Infrastructure
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+            services.AddScoped<ICityRepository, CityRepository>();
+            services.AddScoped<ICountryRepository, CountryRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IStatusRepository, StatusRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IExternalVendorRepository, ExternalVendorRepository>();

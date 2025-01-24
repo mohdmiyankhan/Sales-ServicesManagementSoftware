@@ -16,7 +16,27 @@ namespace SSMS.Infrastructure.Repositories
     {
         public async Task<ApiResponseModel<IEnumerable<SubCategoryEntity>>> GetAllSubCategoriesAsync()
         {
-            var subCategories = await dbContext.SubCategoryMaster.Where(x => x.IsActive == 1).ToListAsync();
+            IQueryable<SubCategoryEntity> query = from subCategory in dbContext.SubCategoryMaster
+                                                  join category in dbContext.CategoryMaster
+                                                  on subCategory.Id equals category.Id
+                                                  where subCategory.IsActive == 1
+                                                  select new SubCategoryEntity
+                                                  {
+                                                      Id = subCategory.Id,
+                                                      SubCategory = subCategory.SubCategory,
+                                                      Category = category.Category,
+                                                      CategoryId = subCategory.CategoryId,
+                                                      Description = subCategory.Description,
+                                                      CreatedBy = subCategory.CreatedBy,
+                                                      CreatedDate = subCategory.CreatedDate,
+                                                      ModifiedBy = subCategory.ModifiedBy,
+                                                      ModifiedDate = subCategory.ModifiedDate,
+                                                      DeletedBy = subCategory.DeletedBy,
+                                                      DeletedDate = subCategory.DeletedDate,
+                                                      IsActive = subCategory.IsActive,
+                                                  };
+            var subCategories = await query.ToListAsync();
+
             if (subCategories.Count > 0)
             {
                 // Create Api response

@@ -6,28 +6,28 @@ using SSMS.Infrastructure.Data;
 
 namespace SSMS.Infrastructure.Repositories
 {
-    public class RoleRepository(SSMSDbContext dbContext) : IRoleRepository
+    public class CountryRepository(SSMSDbContext dbContext) : ICountryRepository
     {
-        public async Task<ApiResponseModel<IEnumerable<RoleEntity>>> GetAllRolesAsync()
+        public async Task<ApiResponseModel<IEnumerable<CountryEntity>>> GetAllCountriesAsync()
         {
-            IQueryable<RoleEntity> rolesQ = dbContext.RoleMaster;
-            IEnumerable<RoleEntity> rolesE = await rolesQ.Where(x => x.IsActive == 1).ToListAsync();
+            IQueryable<CountryEntity> countriesQ = dbContext.CountryMaster;
+            IEnumerable<CountryEntity> countriesE = await countriesQ.Where(x => x.IsActive == 1).ToListAsync();
 
-            if (rolesE.Any())
+            if (countriesE.Any())
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
+                var response = new ApiResponseModel<IEnumerable<CountryEntity>>
                 {
-                    Message = "Role list fetched successfully.",
+                    Message = "Country list fetched successfully.",
                     Status = 200,
-                    Data = rolesE
+                    Data = countriesE
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<IEnumerable<RoleEntity>>
+                var response = new ApiResponseModel<IEnumerable<CountryEntity>>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -36,24 +36,24 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> GetRoleByIdAsync(int roleId)
+        public async Task<ApiResponseModel<CountryEntity>> GetCountryByIdAsync(int countryId)
         {
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var country = await dbContext.CountryMaster.FirstOrDefaultAsync(x => x.Id == countryId);
+            if (country is not null)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
-                    Message = "Role fetched successfully.",
+                    Message = "Country fetched successfully.",
                     Status = 200,
-                    Data = role
+                    Data = country
                 };
                 return response;
             }
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
                     Message = "Record not found.",
                     Status = 404
@@ -62,7 +62,7 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> AddRoleAsync(RoleEntity entity)
+        public async Task<ApiResponseModel<CountryEntity>> AddCountryAsync(CountryEntity entity)
         {
             //entity.Id = Guid.NewGuid();
             entity.CreatedBy = null;
@@ -73,14 +73,14 @@ namespace SSMS.Infrastructure.Repositories
             entity.DeletedDate = null;
             entity.IsActive = 1;
 
-            dbContext.RoleMaster.Add(entity);
+            dbContext.CountryMaster.Add(entity);
             int res = await dbContext.SaveChangesAsync();
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
-                    Message = "Role added successfully.",
+                    Message = "Country added successfully.",
                     Status = 200
                 };
                 return response;
@@ -88,7 +88,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -97,15 +97,15 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> UpdateRoleAsync(int roleId, RoleEntity entity)
+        public async Task<ApiResponseModel<CountryEntity>> UpdateCountryAsync(int countryId, CountryEntity entity)
         {
             int res = 0;
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var country = await dbContext.CountryMaster.FirstOrDefaultAsync(x => x.Id == countryId);
+            if (country is not null)
             {
-                role.Role = entity.Role;
-                role.ModifiedBy = null;
-                role.ModifiedDate = DateTime.UtcNow;
+                country.Country = entity.Country;
+                country.ModifiedBy = null;
+                country.ModifiedDate = DateTime.UtcNow;
 
                 res = await dbContext.SaveChangesAsync();
             }
@@ -113,9 +113,9 @@ namespace SSMS.Infrastructure.Repositories
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
-                    Message = "Role updated successfully.",
+                    Message = "Country updated successfully.",
                     Status = 200
                 };
                 return response;
@@ -123,7 +123,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400
@@ -132,26 +132,26 @@ namespace SSMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<ApiResponseModel<RoleEntity>> DeleteRoleAsync(int roleId)
+        public async Task<ApiResponseModel<CountryEntity>> DeleteCountryAsync(int countryId)
         {
             int res = 0;
-            var role = await dbContext.RoleMaster.FirstOrDefaultAsync(x => x.Id == roleId);
-            if (role is not null)
+            var country = await dbContext.CountryMaster.FirstOrDefaultAsync(x => x.Id == countryId);
+            if (country is not null)
             {
-                role.DeletedBy = null;
-                role.DeletedDate = DateTime.UtcNow;
-                role.IsActive = 0;
+                country.DeletedBy = null;
+                country.DeletedDate = DateTime.UtcNow;
+                country.IsActive = 0;
 
-                //dbContext.RoleMaster.Remove(role);
+                //dbContext.CountryMaster.Remove(country);
                 res = await dbContext.SaveChangesAsync();
             }
 
             if (res > 0)
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
-                    Message = "Role deleted successfully.",
+                    Message = "Country deleted successfully.",
                     Status = 200
                 };
                 return response;
@@ -159,7 +159,7 @@ namespace SSMS.Infrastructure.Repositories
             else
             {
                 // Create Api response
-                var response = new ApiResponseModel<RoleEntity>
+                var response = new ApiResponseModel<CountryEntity>
                 {
                     Message = "Some error occurd.",
                     Status = 400

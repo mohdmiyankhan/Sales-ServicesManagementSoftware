@@ -7,9 +7,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllUsers")]
@@ -27,16 +27,16 @@ namespace SSMS.API.Controllers
         }
 
         [HttpPost("addUser")]
-        public async Task<IActionResult> AddUserAsync([FromBody] UserEntity user)
+        public async Task<IActionResult> AddUserAsync([FromBody] UserEntity entity)
         {
-            var result = await sender.Send(new AddUserCommand(user));
+            var result = await sender.Send(new AddUserCommand(entity));
             return StatusCode(result.Status, result);
         }
 
         [HttpPut("updateUser/{userId}")]
-        public async Task<IActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UserEntity user)
+        public async Task<IActionResult> UpdateUserAsync([FromRoute] int userId, [FromBody] UserEntity entity)
         {
-            var result = await sender.Send(new UpdateUserCommand(userId, user));
+            var result = await sender.Send(new UpdateUserCommand(userId, entity));
             return StatusCode(result.Status, result);
         }
 

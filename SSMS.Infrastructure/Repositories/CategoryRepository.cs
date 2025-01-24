@@ -10,15 +10,17 @@ namespace SSMS.Infrastructure.Repositories
     {
         public async Task<ApiResponseModel<IEnumerable<CategoryEntity>>> GetAllCategoriesAsync()
         {
-            var categories = await dbContext.CategoryMaster.Where(x => x.IsActive == 1).ToListAsync();
-            if (categories.Count > 0)
+            IQueryable<CategoryEntity> categoriesQ = dbContext.CategoryMaster;
+            IEnumerable<CategoryEntity> categoriesE = await categoriesQ.Where(x => x.IsActive == 1).ToListAsync();
+
+            if (categoriesE.Any())
             {
                 // Create Api response
                 var response = new ApiResponseModel<IEnumerable<CategoryEntity>>
                 {
                     Message = "Category list fetched successfully.",
                     Status = 200,
-                    Data = categories
+                    Data = categoriesE
                 };
                 return response;
             }
