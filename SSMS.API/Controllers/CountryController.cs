@@ -8,9 +8,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/country")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/country")]
     public class CountryController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllCountries")]

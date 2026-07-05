@@ -8,9 +8,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/city")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/city")]
     public class CityController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllCities")]

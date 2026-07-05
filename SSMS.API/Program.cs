@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -9,9 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 //// Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
+
 //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(option =>
 {
     //option.SwaggerDoc("v1", new OpenApiInfo { Title = "SSMS", Version = "v1" });
@@ -34,25 +46,29 @@ builder.Services.AddSwaggerGen(option =>
         //TermsOfService = new Uri("https://your-website.com/terms")
     });
 
-    var jwtSecurityScheme = new OpenApiSecurityScheme
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        BearerFormat = "JWT",
         Name = "Authorization",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Enter your JWT Access Token",
-        Reference = new OpenApiReference
-        {
-            Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
-    };
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT Access Token"
+    });
 
-    option.AddSecurityDefinition("Bearer", jwtSecurityScheme);
     option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        { jwtSecurityScheme, Array.Empty<string>() }
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 });
 
@@ -70,19 +86,94 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
-        ValidAudience = builder.Configuration["JwtConfig:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
+        ValidAudience = builder.Configuration["JwtConfig:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        // Optional: Read token from custom location
+        OnMessageReceived = context =>
+        {
+            return Task.CompletedTask;
+        },
+
+        // Token is valid
+        OnTokenValidated = context =>
+        {
+            return Task.CompletedTask;
+        },
+
+        // Invalid / Expired Token
+        OnAuthenticationFailed = context =>
+        {
+            if (context.Exception is SecurityTokenExpiredException)
+            {
+                context.HttpContext.Items["TokenExpired"] = true;
+            }
+
+            return Task.CompletedTask;
+        },
+
+        // 401 Unauthorized
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            string message;
+
+            if (context.HttpContext.Items.ContainsKey("TokenExpired"))
+            {
+                message = "Token has expired. Please login again.";
+            }
+            else if (context.AuthenticateFailure != null)
+            {
+                message = "Invalid JWT token.";
+            }
+            else
+            {
+                message = "JWT token is missing.";
+            }
+
+            await context.Response.WriteAsJsonAsync(new
+            {
+                StatusCode = 401,
+                Success = false,
+                Message = message
+            });
+        },
+
+        // 403 Forbidden
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsJsonAsync(new
+            {
+                StatusCode = 403,
+                Success = false,
+                Message = "You are not authorized to access this resource."
+            });
+        }
     };
 });
 
@@ -96,21 +187,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-if (app.Environment.IsProduction())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseCors("AllowOrigin");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors("AllowOrigin");
 
 app.MapControllers();
 

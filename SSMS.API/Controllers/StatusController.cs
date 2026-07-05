@@ -8,9 +8,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/status")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/status")]
     public class StatusController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllStatuses")]

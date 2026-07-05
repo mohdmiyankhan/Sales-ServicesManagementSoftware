@@ -7,8 +7,8 @@ using SSMS.Infrastructure.Services;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/auth")]
     [ApiController]
+    [Route("api/auth")]
     public class AuthController(ISender sender, IConfiguration configuration) : ControllerBase
     {
         [AllowAnonymous]
@@ -18,13 +18,15 @@ namespace SSMS.API.Controllers
             var user = await sender.Send(new ValidateUserQuery(model));
             if (user is not null)
             {
+                var tokenDetails = GenerateToken.JwtToken(user, configuration);
                 var login = new Login
                 {
                     Message = "User is LoggedIn successfully.",
                     Status = 200,
                     Name = user.Name,
                     Username = user.Username,
-                    AccessToken = GenerateToken.JwtToken(user, configuration)
+                    AccessToken = tokenDetails.token,
+                    ExpiryInHours = tokenDetails.expiry
                 };
                 return StatusCode(login.Status, login);
             }

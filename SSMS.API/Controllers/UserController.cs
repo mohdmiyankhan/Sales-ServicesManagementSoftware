@@ -7,9 +7,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/user")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/user")]
     public class UserController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllUsers")]

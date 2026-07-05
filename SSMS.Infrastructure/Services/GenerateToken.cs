@@ -9,13 +9,13 @@ namespace SSMS.Infrastructure.Services
 {
     public static class GenerateToken
     {
-        public static string JwtToken(UserEntity user, IConfiguration configuration)
+        public static (string token, int expiry) JwtToken(UserEntity user, IConfiguration configuration)
         {
             var issuer = configuration["JwtConfig:Issuer"];
             var audience = configuration["JwtConfig:Audience"];
             var key = configuration["JwtConfig:Key"];
-            var tokenValidityMinutes = configuration.GetValue<int>("JwtConfig:TokenExpiryMinutes");
-            var tokenExpiryTimeStamp = DateTime.UtcNow.AddMinutes(tokenValidityMinutes);
+            var tokenValidityHours = configuration.GetValue<int>("JwtConfig:TokenExpiryHours");
+            var tokenExpiryTimeStamp = DateTime.Now.AddMinutes(tokenValidityHours);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -36,7 +36,7 @@ namespace SSMS.Infrastructure.Services
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var accessToken = tokenHandler.WriteToken(securityToken);
 
-            return accessToken;
+            return (accessToken, tokenValidityHours);
         }
     }
 }

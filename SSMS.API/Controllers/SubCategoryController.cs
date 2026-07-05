@@ -9,9 +9,9 @@ using SSMS.Core.Models;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/subCategory")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/subCategory")]
     public class SubCategoryController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllSubCategories")]

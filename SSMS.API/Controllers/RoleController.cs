@@ -8,9 +8,9 @@ using SSMS.Core.Entities;
 
 namespace SSMS.API.Controllers
 {
-    [Route("api/role")]
+    [Authorize]
     [ApiController]
-    //[Authorize]
+    [Route("api/role")]
     public class RoleController(ISender sender) : ControllerBase
     {
         [HttpGet("getAllRoles")]
